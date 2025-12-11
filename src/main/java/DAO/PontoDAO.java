@@ -56,6 +56,8 @@ public class PontoDAO {
                     ponto.setTipo(rs.getString("tipo"));
                     ponto.setDataCriacao(rs.getTimestamp("data_criacao").toLocalDateTime());
                     ponto.setMensagemConformidade(rs.getString("mensagem_conformidade"));
+
+                    pontos.add(ponto);
                 }
             }
 
@@ -64,6 +66,7 @@ public class PontoDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar pontos do motorista: " + motoristaId, e);
         }
+
     }
 
 }
