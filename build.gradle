@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'war' // ESSENCIAL para empacotar para o Tomcat
+}
+
+group 'com.gw'
+version '1.0-SNAPSHOT'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Servlets e JSP (Fornecidos pelo Tomcat 9)
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
+
+    // PostgreSQL, Gson, e Testes
+    implementation 'org.postgresql:postgresql:42.7.3'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+}
+
+// Tarefa WAR explícita (para garantir que o nome de saída seja o correto)
+war {
+    archiveFileName.set("GW_ComplianceSys-1.0-SNAPSHOT.war")
+    destinationDirectory.set(file("$buildDir/libs"))
+}
+
+// Bloco JAR explícito (ajuda o plugin war a ser executado corretamente)
+jar {
+    enabled = true
+}
+
+test {
+    useJUnitPlatform()  // Garante que o Gradle use o JUnit 5
+}
