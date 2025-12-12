@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,37 @@ public class PontoDAO {
             throw new RuntimeException("Erro ao buscar pontos do motorista: " + motoristaId, e);
         }
 
+    }
+
+    public List<Ponto> buscarPontosPorDia(LocalDate data) {
+        String sql = "SELECT id, motorista_id, registro, tipo, data_criacao, mensagem_conformidade " +
+                "FROM ponto " +
+                "WHERE DATE(registro) = ? ORDER BY motorista_id, registro";
+
+        List<Ponto> pontos = new ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDate(1, java.sql.Date.valueOf(data));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Ponto ponto = new Ponto();
+                    ponto.setId(rs.getLong("id"));
+                    ponto.setMotoristaId(rs.getLong("motorista_id"));
+                    ponto.setRegistro(rs.getTimestamp("registro").toLocalDateTime());
+                    ponto.setTipo(rs.getString("tipo"));
+                    ponto.setDataCriacao(rs.getTimestamp("data_criacao").toLocalDateTime());
+                    ponto.setMensagemConformidade(rs.getString("mensagem_conformidade"));
+                    pontos.add(ponto);
+                }
+            }
+            return pontos;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar pontos do dia.", e);
+        }
     }
 
 }

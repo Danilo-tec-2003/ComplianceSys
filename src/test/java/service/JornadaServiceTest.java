@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -109,7 +110,6 @@ class JornadaServiceTest {
             assertFalse(r.contains("Descanso Diário"),
                     "Descanso de 11h é exatamente o mínimo permitido.");
         }
-
 
         @Nested
         @DisplayName("2. Testes de Infrações (ALERTA CRÍTICO)")
@@ -226,7 +226,6 @@ class JornadaServiceTest {
                         "Faltando 1 minuto para completar 1h deve falhar.");
             }
         }
-
 
     }
 }
