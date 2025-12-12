@@ -17,6 +17,9 @@ import java.time.LocalDateTime;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @WebServlet("/api/jornada")
 public class JornadaServlet extends HttpServlet {
@@ -32,20 +35,54 @@ public class JornadaServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        String motoristaIdParam = request.getParameter("motoristaId");
+        String dataParam = request.getParameter("data");
+
+        List<Ponto> pontos = null;
+
+        try {
+            if (motoristaIdParam != null && !motoristaIdParam.isEmpty()) {
+                Long motoristaId = Long.parseLong(motoristaIdParam);
+                pontos = pontoDAO.buscarPontosPorMotoristaId(motoristaId);
+
+            } else if (dataParam != null && !dataParam.isEmpty()) {
+                LocalDate data = LocalDate.parse(dataParam);
+                pontos = pontoDAO.buscarPontosPorDia(data);
+
+            }
+
+            if (pontos != null) {
+                if (!pontos.isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write(gson.toJson(pontos));
+                    return;
+                } else {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    response.getWriter().write(gson.toJson("Nenhum ponto Registrado para essa Data."));
+                    return;
+                }
+            }
+
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write(gson.toJson("Parâmetro ID inválido."));
+            return;
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write(gson.toJson("Erro interno do servidor: " + e.getMessage()));
+            return;
+        }
+
         Ponto pontoExemplo = new Ponto(
                 null,
                 100L,
                 LocalDateTime.now(),
                 "INICIO_JORNADA",
-                null,
-                LocalDateTime.now(),
+                null, LocalDateTime.now(),
                 "OK: Teste de Serialização"
         );
-
         response.setStatus(HttpServletResponse.SC_OK);
-        String jsonSaida = gson.toJson(pontoExemplo);
-        response.getWriter().write(jsonSaida);
-
+        response.getWriter().write(gson.toJson(pontoExemplo));
     }
 
     @Override
@@ -54,10 +91,9 @@ public class JornadaServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            // 1. LER O BODY DA REQUISIÇÃO (JSON)
+
             String jsonInput = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 
-            // 2. DESSERIALIZAÇÃO: Converte o JSON em uma Lista de Objetos Ponto
             Type listType = new TypeToken<List<Ponto>>(){}.getType();
             List<Ponto> pontosRecebidos = gson.fromJson(jsonInput, listType);
 
