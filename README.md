@@ -253,7 +253,7 @@ curl http://localhost:8080/compliancesys/api/jornada?data=2025-12-10
 
 ### 🔸 Teste POST no Postman
 
-![Teste POST - Registro de Jornada](docs/images/postID100.png)
+![Teste POST - Registro de Jornada](docs/imagens/postID100.png)
 
 *Registro de pontos para motorista ID 100 com jornada em conformidade*
 
@@ -261,7 +261,7 @@ curl http://localhost:8080/compliancesys/api/jornada?data=2025-12-10
 
 ### 🔸 Teste GET - DATA no Postman
 
-![Teste POST - Registro de Jornada](docs/images/buscandoPorDia12.png)
+![Teste POST - Registro de Jornada](docs/imagens/buscandoPorDia12.png)
 
 *Método de busca usando Data como filtro*
 
@@ -269,14 +269,14 @@ curl http://localhost:8080/compliancesys/api/jornada?data=2025-12-10
 
 ### 🔸 Teste GET - ID do motorista no Postman
 
-![Teste POST - Registro de Jornada](docs/images/getID100.png)
+![Teste POST - Registro de Jornada](docs/imagens/getID100.png)
 
 *Método de busca usando ID do motorista como filtro*
 
 
 ### 🔸 Dados Persistidos no PostgreSQL
 
-![Query PostgreSQL](docs/images/buscaGeralBanco.png)
+![Query PostgreSQL](docs/imagens/buscaGeralBanco.png)
 
 *Consulta `SELECT * FROM ponto;` mostrando registros com mensagens de conformidade*
 
