@@ -1,6 +1,7 @@
 plugins {
     id 'java'
-    id 'war' // ESSENCIAL para empacotar para o Tomcat
+    id 'war'
+    id 'jacoco'
 }
 
 group 'com.gw'
@@ -37,4 +38,55 @@ jar {
 
 test {
     useJUnitPlatform()  // Garante que o Gradle use o JUnit 5
+}
+
+
+jacocoTestReport {
+    dependsOn test
+
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it,
+                includes: ['service/JornadaService.class', 'service/JornadaService$*.class'],
+                excludes: ['**/*DAO.class', '**/*Servlet.class', '**/model/**', '**/DatabaseConfig/**'])
+    }))
+
+    sourceDirectories.from = files(sourceSets.main.allSource.srcDirs)
+
+
+    reports {
+        html {
+            required = true
+            destination = file("${buildDir}/jacocoHtml")
+        }
+
+        xml {
+            required = true
+            destination = file("${buildDir}/reports/jacoco/jacocoTestReport.xml")
+        }
+    }
+}
+
+
+tasks.named('jacocoTestCoverageVerification', JacocoCoverageVerification) {
+    dependsOn jacocoTestReport
+
+    // Configura o escopo para a verificação (APENAS o JornadaService)
+    violationRules {
+        rule {
+            element = 'CLASS'
+            includes = ['service.JornadaService']
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 1.00 // Exige 100% de cobertura
+            }
+        }
+    }
+
+    // Define o escopo das classes a serem verificadas
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it,
+                includes: ['service/JornadaService.class', 'service/JornadaService$*.class'])
+    }))
 }
